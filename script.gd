@@ -1,6 +1,6 @@
 extends Node2D
 
-var speed = 300
+var speed = 100
 var velocity = Vector2()
 var gravity = 2000
 var direction = Vector2(1, 0)
@@ -27,7 +27,7 @@ var drag_offset = Vector2()
 
 func _ready():
 	screen_size = Vector2(DisplayServer.screen_get_size())
-	animated_sprite.play("walk")
+	animated_sprite.play("senku_dragged")
 	area.input_event.connect(_on_area_input)
 	
 
@@ -67,20 +67,20 @@ func _physics_process(delta: float) -> void:
 			is_falling = false
 			is_recovering = true
 			print("is recovering")
-			animated_sprite.play("recover")
+			animated_sprite.play("senku_recover")
 		return
 	
 	if is_recovering:
 		if $AnimatedSprite2D.frame == last_frame_index:
 			is_recovering = false
-			animated_sprite.play("walk")
+			animated_sprite.play("senku_walk")
 		return
 		
 	if is_idling:
 		if $AnimatedSprite2D.frame == last_frame_index:
 			is_idling = false
-			speed = 300
-			animated_sprite.play("walk")
+			speed = 100
+			animated_sprite.play("senku_walk")
 		return
 	
 	window_position += direction * speed * delta
@@ -101,21 +101,23 @@ func _physics_process(delta: float) -> void:
 	
 
 func maybe_idle():
-	if randf() < 0.002:
+	if randf() < 0.02:
 		is_idling = true
 		time_since_idle = 0
-		var r = randi() % 2
+		var r = randi() % 3
 		if r == 0:
-			animated_sprite.play("Play_dead")
+			animated_sprite.play("senku_earpicking")
 			speed = 0
 		if r == 1:
-			animated_sprite.play("caw")
+			animated_sprite.play("senku_reading")
+		if r == 2:
+			animated_sprite.play("senku_stand")
 
 func _on_area_input(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			is_idling = false
-			animated_sprite.play("dragged")
+			animated_sprite.play("senku_dragged")
 			is_dragging = true
 			
 			mouse_pos = Vector2(DisplayServer.mouse_get_position())
